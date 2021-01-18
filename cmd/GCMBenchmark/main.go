@@ -6,7 +6,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/jedib0t/go-pretty/table"
-	"github.com/saegewerk/gopsutil/cpu"
+	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v3/host"
 	"golang.org/x/crypto/scrypt"
 	"os"
 	"sync"
@@ -46,12 +47,14 @@ type Benchmark struct {
 }
 
 func main() {
-	runAmounts := []int{10000, 100000,500000}
+	runAmounts := []int{10000, 100000, 500000}
 	benchmarks := make([]Benchmark, 0)
 	infos, _ := cpu.Info()
 	info := infos[0]
+	s1, s2, s3, err := host.PlatformInformation()
+	fmt.Println("GCMBenchmark -", s1, s2, s3)
 	fmt.Print(info.ModelName)
-	fmt.Println(" -", info.LogicalCores, "Logical Cores"," -", info.Cores, "Cores")
+	fmt.Println(" -", info.Cores, "Logical Cores")
 
 	salt, err := hex.DecodeString("13dd7466fa8f561084ee756921091808dc79d8225afdf6db6bbda252a40f9ccf")
 	if err != nil {
@@ -64,7 +67,7 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
-	for routines :=  info.LogicalCores; routines >= 1; routines = routines / 2 {
+	for routines := info.Cores; routines >= 1; routines = routines / 2 {
 		for _, runAmount := range runAmounts {
 			benchmark := Benchmark{
 				RunAmount:  runAmount,
