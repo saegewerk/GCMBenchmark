@@ -1,4 +1,4 @@
-#GCMBenchmark
+# GCMBenchmark
 ## Build
 ### Windows
 ```
